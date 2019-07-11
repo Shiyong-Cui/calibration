@@ -45,15 +45,16 @@ void JointCalibration::Load(const std::string& joint_cam_file)
 void JointCalibration::Save(const std::string& joint_cam_file)
 {
 	// save the results
-	cv::FileStorage fs1(joint_cam_file, cv::FileStorage::WRITE);
-	fs1 << "K1" << left_camera.Camera_matrix();
-	fs1 << "K2" << right_camera.Camera_matrix();
-	fs1 << "D1" << left_camera.Distortion_coeffs();
-	fs1 << "D2" << right_camera.Distortion_coeffs();
-	fs1 << "R" << rotation;
-	fs1 << "T" << translation;
-	fs1 << "E" << essential;
-	fs1 << "F" << fundamental;
+	cv::FileStorage fs(joint_cam_file, cv::FileStorage::WRITE);
+	fs << "K1" << left_camera.Camera_matrix();
+	fs << "K2" << right_camera.Camera_matrix();
+	fs << "D1" << left_camera.Distortion_coeffs();
+	fs << "D2" << right_camera.Distortion_coeffs();
+	fs << "R" << rotation;
+	fs << "T" << translation;
+	fs << "E" << essential;
+	fs << "F" << fundamental;
+	fs.release();
 }
 
 void JointCalibration::CalibrateRight(const std::string& res_path, 

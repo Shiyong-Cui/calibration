@@ -18,6 +18,7 @@ public:
 	void Distortion_coeffs(const cv::Mat& val) { m_distortion_coeffs = val; }
 	void Load(const std::string& res_path);
 	void Save(const std::string& file) const;
+	// 
 private:
 	// calibrated parameters
 	cv::Mat m_camera_matrix;

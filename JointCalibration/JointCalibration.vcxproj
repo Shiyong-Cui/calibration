@@ -160,12 +160,16 @@
     <ClInclude Include="BaslerRGB.h" />
     <ClInclude Include="BaslerTOF.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraRig.h" />
+    <ClInclude Include="FindCorners.h" />
     <ClInclude Include="JointCalibration.h" />
     <ClInclude Include="MonoCalibration.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraRig.cpp" />
+    <ClCompile Include="FindCorners.cpp" />
     <ClCompile Include="Joint.cpp" />
     <ClCompile Include="JointCalibration.cpp" />
     <ClCompile Include="MonoCalibration.cpp" />

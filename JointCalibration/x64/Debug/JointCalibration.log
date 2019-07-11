@@ -1,25 +1,2 @@
-﻿  Camera.cpp
-  Joint.cpp
-  JointCalibration.cpp
-c:\users\cui\source\repos\jointcalibration\jointcalibration\jointcalibration.cpp(120): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\cui\source\repos\jointcalibration\jointcalibration\jointcalibration.cpp(133): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-          and
-          [
-              _Tp=float
-          ]
-  MonoCalibration.cpp
-c:\users\cui\source\repos\jointcalibration\jointcalibration\monocalibration.cpp(48): warning C4244: 'argument': conversion from '_Ty' to '_Tp', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-          and
-          [
-              _Tp=float
-          ]
-  Generating Code...
+﻿  CameraRig.cpp
   JointCalibration.vcxproj -> C:\Users\Cui\source\repos\JointCalibration\x64\Debug\JointCalibration.exe

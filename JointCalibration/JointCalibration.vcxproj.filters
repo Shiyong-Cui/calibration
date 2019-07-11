@@ -33,6 +33,12 @@
     <ClInclude Include="MonoCalibration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FindCorners.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraRig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -48,6 +54,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Joint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FindCorners.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraRig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

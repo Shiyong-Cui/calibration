@@ -62,10 +62,34 @@ void MonoCalibration::Calibrate(const std::string& res_path)
 
 		std::vector<cv::Point2f> imageCorners;
 
-		bool found = findChessboardCorners(imageGray, board_sz, imageCorners);
+		//do a sharpen filter for the large resolution image
+		int height = imageGray.rows;
+		int width = imageGray.cols;
+		cv::Mat shrink;
+		double factor = 0.6;
+		int max_im_size = 1500;
+
+		if (width > max_im_size) {
+			// scale the image
+			cv::resize(imageGray, shrink, cv::Size(), factor, factor, cv::INTER_LINEAR);
+		}
+		else {
+			shrink = imageGray;
+		}
+
+		bool found = findChessboardCorners(shrink, board_sz, imageCorners,
+			cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FILTER_QUADS);
 
 		if (found) {
 			std::cout << chessboard_img_fnames[i] << "  True" << std::endl;
+
+			if (width > max_im_size) {
+				for (int i = 0; i < imageCorners.size(); i++)
+				{      
+					// scale back 
+					imageCorners[i] /= factor;
+				}
+			}
 
 			// Get sub-pixel accuracy on the corners
 			cornerSubPix(imageGray, imageCorners,

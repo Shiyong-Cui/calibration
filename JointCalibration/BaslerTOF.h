@@ -23,7 +23,7 @@ namespace sensors {
 
 	class BaslerTOF {
 	public:
-		BaslerTOF(): serialNumber_("22538427")
+		BaslerTOF(): serialNumber_("22538427"), pPoint(nullptr)
 		{
 			CToFCamera::InitProducer();
 		}
@@ -187,12 +187,13 @@ namespace sensors {
 				applySettings();
 				// loadFromFile(settingsPath_.c_str());
 
-				// Enable depth and intensity data
+				// Enable 3D (point cloud) data and intensity data 
 				GenApi::CEnumerationPtr ptrImageComponentSelector = tofCamera_.GetParameter("ImageComponentSelector");
 				GenApi::CBooleanPtr ptrImageComponentEnable = tofCamera_.GetParameter("ImageComponentEnable");
 				GenApi::CEnumerationPtr ptrPixelFormat = tofCamera_.GetParameter("PixelFormat");
 				ptrImageComponentSelector->FromString("Range");
 				ptrImageComponentEnable->SetValue(true);
+				ptrPixelFormat->FromString("Coord3D_ABC32f");
 				ptrImageComponentSelector->FromString("Intensity");
 				ptrImageComponentEnable->SetValue(true);
 
@@ -236,13 +237,16 @@ namespace sensors {
 			}
 
 			// Get Buffer
-			BufferParts parts;
+			parts.clear();
 			tofCamera_.GetBufferParts(grabResult, parts);
 
 			// Get Dim
 			imageSize_.width = (int)parts[0].width;
 			imageSize_.height = (int)parts[0].height;
 			int count = imageSize_.width * imageSize_.height;
+
+			// Get point cloud data
+			pPoint = (CToFCamera::Coord3D*) parts[0].pData;
 
 			// Get Depth
 			rangeMap_ = cv::Mat(imageSize_.height, imageSize_.width, CV_16UC1, parts[0].pData);
@@ -254,7 +258,7 @@ namespace sensors {
 			intensityMap_ /= (max / (std::numeric_limits<uint16_t>::max)());
 			// cv::convertScaleAbs(intensityMap_, intensityMap_, (255.0 / 65535.0));
 
-			// Put the buffer back into the acquisition  queue to fill with new data
+			// Put the buffer back into the acquisition queue to fill with new data
 			tofCamera_.QueueBuffer(grabResult.hBuffer);
 
 			return true;
@@ -268,6 +272,21 @@ namespace sensors {
 			return intensityMap_;
 		}
 
+		const BufferParts& getData()
+		{
+			return parts;
+		}
+
+		const cv::Size getImageSize()
+		{
+			return imageSize_;
+		}
+		
+		const CToFCamera::Coord3D* getPointCloud()
+		{
+			return pPoint;
+		}
+
 	private:
 		CToFCamera  tofCamera_;
 		// serial number of the camera that is to be opened
@@ -277,6 +296,8 @@ namespace sensors {
 
 		cv::Mat rangeMap_;
 		cv::Mat intensityMap_;
+		CToFCamera::Coord3D* pPoint;
+		BufferParts parts;
 		cv::Size imageSize_;
 	};
 

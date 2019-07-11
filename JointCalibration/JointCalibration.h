@@ -32,6 +32,9 @@ public:
 		const std::vector<int>& chessboard_size,
 		const std::vector<double>& chessboard_physi_size,
 		bool single_calib = true);
+	// get the cameras
+	const Camera& LeftCamera() const { return left_camera; }
+	const Camera& RightCamera() const { return right_camera; }
 
 private:
 	// find the corresponding points from both left and right images
