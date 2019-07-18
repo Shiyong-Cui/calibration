@@ -46,9 +46,6 @@ public:
 		vector<cv::Point3d>& selected_3d_points);
 	void computePosition(const vector<cv::Point3d>& selected_3d_points, cv::Point3d& position);
 
-	// for debug
-	void MatType(const cv::Mat& inputMat);
-
 private:
 	sensors::BaslerTOF tofCamera;
 	sensors::BaslerRGB rgbCamera;

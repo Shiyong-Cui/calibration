@@ -235,8 +235,7 @@ void CameraRig::projectPointCloud(vector<cv::Point2d>& points, vector<cv::Point3
 		if (point->IsValid())
 		{			
 			cv::Mat point3D = (cv::Mat_<double>(3, 1) << point->x, point->y, point->z);
-			// cv::Mat point2D = m_rgb_camera_matrix * (m_rotation.inv() * (point3D - m_translation));
-			cv::Mat point2D = m_rgb_camera_matrix * (m_rotation.t() * (point3D - m_translation));
+			cv::Mat point2D = m_rgb_camera_matrix * (m_rotation.inv() * (point3D - m_translation));
 			double u = point2D.at<double>(0, 0) / point2D.at<double>(2, 0);
 			double v = point2D.at<double>(1, 0) / point2D.at<double>(2, 0);
 			points.push_back(cv::Point2d(u, v));
@@ -279,27 +278,3 @@ void CameraRig::computePosition(const vector<cv::Point3d>& selected_3d_points, c
 	position.y = sum_y / nbPoints;
 	position.z = sum_z / nbPoints;
 }
-
-void CameraRig::MatType(const cv::Mat& inputMat)
-{
-	int inttype = inputMat.type();
-
-	string r, a;
-	uchar depth = inttype & CV_MAT_DEPTH_MASK;
-	uchar chans = 1 + (inttype >> CV_CN_SHIFT);
-	switch (depth) {
-	case CV_8U:  r = "8U";   a = "Mat.at<uchar>(y,x)"; break;
-	case CV_8S:  r = "8S";   a = "Mat.at<schar>(y,x)"; break;
-	case CV_16U: r = "16U";  a = "Mat.at<ushort>(y,x)"; break;
-	case CV_16S: r = "16S";  a = "Mat.at<short>(y,x)"; break;
-	case CV_32S: r = "32S";  a = "Mat.at<int>(y,x)"; break;
-	case CV_32F: r = "32F";  a = "Mat.at<float>(y,x)"; break;
-	case CV_64F: r = "64F";  a = "Mat.at<double>(y,x)"; break;
-	default:     r = "User"; a = "Mat.at<UKNOWN>(y,x)"; break;
-	}
-	r += "C";
-	r += (chans + '0');
-	cout << "Mat is of type " << r << " and should be accessed with " << a << endl;
-
-}
-

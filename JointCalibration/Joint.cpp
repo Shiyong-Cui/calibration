@@ -8,7 +8,6 @@
 #include "BaslerRGB.h"
 #include "BaslerTOF.h"
 #include "JointCalibration.h"
-#include "FindCorners.h"
 #include "CameraRig.h"
 
 // capture images for calibration
@@ -21,17 +20,13 @@ void Calibration(const string& rgb_folder, const string& tof_folder);
 void ProjectPoints();
 
 // an example how to use the calibration 
-string left_paths[] = {R"(C:\Users\Cui\source\repos\calib_stereo\calib_imgs\1\left)", 
-				 R"(C:\Users\Cui\source\repos\ToFApp\Joint\images)"};
-string right_paths[] = {R"(C:\Users\Cui\source\repos\calib_stereo\calib_imgs\1\right)", 
-			      R"(C:\Users\Cui\source\repos\ToFApp\Joint\intensity)"};
-
-void test_corner_detection();
+string left_paths[] = {R"(C:\Users\Cui\source\repos\calib_stereo\calib_imgs\1\left)"};
+string right_paths[] = {R"(C:\Users\Cui\source\repos\calib_stereo\calib_imgs\1\right)"};
 
 int main()
 {
 	// folders to save the captured images
-	int dataset_index = 1;
+	int dataset_index = 0;
 	string rgb_folder = left_paths[dataset_index];
 	string tof_folder = right_paths[dataset_index];
 
@@ -58,7 +53,10 @@ void CaptureImages(const string& rgb_folder, const string& tof_folder)
 		bool btof = tofCamera.grabImages();
 		if (brgb && btof) {
 			cv::Mat rgb = rgbCamera.getRGBMap();
-			cv::imshow("OpenCV Display Window", rgb);
+			double factor = 0.3;
+			cv::Mat outImg;
+			cv::resize(rgb, outImg, cv::Size(), factor, factor);
+			cv::imshow("OpenCV Display Window", outImg);
 			cv::Mat intensity = tofCamera.getIntensityMap();
 			cv::imshow("ToF Intensity", intensity);
 
@@ -100,7 +98,7 @@ void CaptureImages(const string& rgb_folder, const string& tof_folder)
 
 void Calibration(const string& rgb_folder, const string& tof_folder)
 {
-	int num_im = 11; // 29;
+	int num_im = 18; // 29;
 	vector<string> left_images(num_im), right_images(num_im);
 	for (int i = 0; i < num_im; i++)
 	{
@@ -109,9 +107,9 @@ void Calibration(const string& rgb_folder, const string& tof_folder)
 	}
 
 	// folder to save the calibration parameters
-	string res_path = R"(C:\Users\Cui\source\repos\ToFApp\Joint\calib)";
-	const std::vector<int> chessboard_size = { 5, 8 }; //  {6, 9};
-	const std::vector<double> chessboard_physi_size = { 0.2433, 0.2433 };
+	string res_path = R"(C:\Users\Cui\source\repos\ToFApp\Joint\calib3)";
+	const std::vector<int> chessboard_size = { 4, 7 }; //  {6, 9};
+	const std::vector<double> chessboard_physi_size = { 35.0, 35.0 };
 	JointCalibration calibrator;
 	calibrator.Calibration(res_path, left_images, right_images, chessboard_size, chessboard_physi_size, true);
 
@@ -140,43 +138,17 @@ void ProjectPoints()
 			cv::Mat intensity = cameras.getIntensityMap();
 
 			cv::imshow("ToF Intensity", intensity);
-			// cv::imshow("OpenCV Display Window", rgb);
 
 			while (int c = cv::waitKey(10))
 			{
 				if (c == 's')
-				{						
+				{			
+					// projection
 					cameras.projectPointCloud(projected_points, original_3d_points);
 					for (size_t i = 0; i < projected_points.size(); i += 50)
 					{
 						cv::circle(rgb, projected_points[i], 4, cv::Scalar(0, 0, 255), 4);
 					}
-
-					ostringstream stringStream;
-					stringStream << data_folder << "/rgb_" << frame << ".jpg";
-					std::string  file_path = stringStream.str();
-					bool bwrite_jpg = cv::imwrite(file_path, rgb);
-					if (!bwrite_jpg)
-						cout << "cannot save rgb images." << endl;
-
-					stringStream.str("");
-					stringStream.clear();
-					stringStream << data_folder << "/int_" << frame << ".png";
-					file_path = stringStream.str();
-					bool bwrite_png = cv::imwrite(file_path, intensity);
-					if (!bwrite_png)
-						cout << "cannot save intensity images." << endl;
-
-					// save point cloud 
-					//stringStream.str("");
-					//stringStream.clear();
-					//stringStream << data_folder << "/pt_" << frame << ".pcd";
-					//file_path = stringStream.str();
-					//bool bwrite_pt = cameras.savePointCloud(file_path.c_str());
-					//if (!bwrite_pt)
-					//	cout << "cannot save point cloud." << endl;
-					
-					frame++;
 				}
 				else if (c == 'q')
 				{
@@ -193,14 +165,4 @@ void ProjectPoints()
 
 	// stop cameras
 	cameras.stop();
-}
-
-void test_corner_detection()
-{
-	string file = R"(C:\Users\Cui\source\repos\ToFApp\Joint\images\frame_0.jpg)";
-	cv::Mat image = cv::imread(file, cv::IMREAD_COLOR);
-
-	vector<Point> corners;  
-	FindCorners corner_detector(image);
-	corner_detector.detectCorners(image, corners, 0.025);
 }
